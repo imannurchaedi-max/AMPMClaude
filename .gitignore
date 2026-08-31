@@ -1,0 +1,11 @@
+# === Routing repo git — lihat GIT_ROUTING.md di branch `main` ===
+# Branch `claude` (remote: ampmclaude -> AMPMClaude) HANYA untuk
+# project claude/. project deepseek/ dikembangkan di branch `main`
+# (remote: origin -> AMPM) dan sengaja diabaikan di sini supaya tidak
+# pernah ke-commit atau ke-push tertukar ke repo AMPMClaude.
+project deepseek/
+AM PM MONITORING.xlsx
+Checksheet AM Adult Rev.00.xlsx
+Checksheet AM Baby Pants Rev.4 (BHP 1 - BHP 3).xlsx
+DATA KARYAWAN.xlsx
+Form PM03 - Maintenance Scheduling 2026.xlsx
