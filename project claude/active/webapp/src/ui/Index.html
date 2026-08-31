@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <!-- Font & ikon diselaraskan dengan DAM PORTAL (0. DT SUMMARY/active trial/index.html) -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    integrity="sha384-c9MVH4yRDZMY+bSlECVISp9U4xBl1dKb5z4x8IgF6lBKTHsh1AtxHBfHiiA+S/Nr" crossorigin="anonymous">
+  <?!= include('ui/Style'); ?>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ LOGIN ============ -->
+  <section id="view-login" class="view active">
+    <div class="login-card">
+      <div class="login-brand">
+        <img class="login-logo" src="https://raw.githubusercontent.com/imannurchaedi-max/damlogo/main/LOGO%20DAM%201.jpg" alt="Logo DAM">
+        <p class="login-company">PT. DAYA ANUGRAH MULYA</p>
+        <h1 class="brand">AM<span>/</span>PM Tracker</h1>
+      </div>
+      <p class="muted">Autonomous Maintenance Checksheet</p>
+
+      <label for="in-nik">NIK</label>
+      <input id="in-nik" type="text" inputmode="numeric" autocomplete="off"
+             placeholder="Nomor induk karyawan" autocomplete="username">
+
+      <label for="in-pass">Password</label>
+      <input id="in-pass" type="password" autocomplete="off"
+             placeholder="Password perusahaan">
+
+      <button id="btn-login" class="btn primary block">Masuk</button>
+      <p id="login-err" class="err"></p>
+    </div>
+  </section>
+
+  <!-- ============ SHELL ============ -->
+  <!-- Struktur & class disamakan persis dengan sidebar DAM PORTAL/Gemba
+       Control Tower (0. DT SUMMARY/active trial/index.html) - logo+judul di
+       header sidebar, profil user beravatar dengan rincian per-baris,
+       nav link berikon. Yang TIDAK diikutkan: mesin multi-modul (nav-group
+       collapsible, banyak modul) - checksheet ini cuma butuh 4 menu datar. -->
+  <div id="shell" class="app-wrapper hidden">
+    <div id="scrim" class="sidebar-overlay hidden"></div>
+
+    <aside id="drawer" class="app-sidebar">
+      <div class="sidebar-header">
+        <img class="sidebar-logo" src="https://raw.githubusercontent.com/imannurchaedi-max/damlogo/main/LOGO%20DAM%201.jpg" alt="Logo DAM">
+        <div class="sidebar-title-group">
+          <div class="sidebar-title">AM/PM Tracker</div>
+          <div class="sidebar-subtitle">Autonomous Maintenance</div>
+        </div>
+      </div>
+
+      <div class="sidebar-user-profile">
+        <div class="sidebar-avatar"><i class="bi bi-person-circle"></i></div>
+        <div class="sidebar-user-name" id="u-name"></div>
+        <hr class="sidebar-divider">
+        <div class="sidebar-user-details">
+          <div><i class="bi bi-hash"></i><span id="u-nik"></span></div>
+          <div><i class="bi bi-briefcase"></i><span id="u-role"></span></div>
+          <div><i class="bi bi-building"></i><span id="u-dept"></span></div>
+          <div><i class="bi bi-geo-alt"></i><span id="u-stations"></span></div>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <button class="drawer-item" data-nav="home"><i class="bi bi-clipboard-check"></i><span>Isi Checksheet</span></button>
+        <button class="drawer-item" data-nav="findings" data-need="manage_findings"><i class="bi bi-flag"></i><span>Temuan</span></button>
+        <button class="drawer-item" data-nav="dashboard" data-need="dashboard"><i class="bi bi-speedometer2"></i><span>Dashboard</span></button>
+        <button class="drawer-item" data-nav="pin"><i class="bi bi-key"></i><span>Ganti Password</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="drawer-item danger" data-nav="logout"><i class="bi bi-box-arrow-right"></i><span>Keluar</span></button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <button id="btn-menu" class="icon-btn" aria-label="Menu"><i class="bi bi-list"></i></button>
+        <button id="btn-back" class="icon-btn hidden" aria-label="Kembali"><i class="bi bi-arrow-left"></i></button>
+        <div class="topbar-title">
+          <span class="topbar-app-label">AM/PM Tracker</span>
+          <strong id="top-title">Beranda</strong>
+          <small id="top-sub"></small>
+        </div>
+        <span class="live-pill" title="Tersambung ke database"></span>
+      </header>
+
+      <main>
+      <!-- ---- HOME: pilih konteks ---- -->
+      <section id="view-home" class="view">
+        <div class="card">
+          <label for="sel-machine">Mesin</label>
+          <select id="sel-machine"></select>
+
+          <label for="sel-station">Stasiun</label>
+          <select id="sel-station"></select>
+
+          <div class="row">
+            <div class="col">
+              <label for="in-date">Tanggal</label>
+              <input id="in-date" type="date">
+            </div>
+            <div class="col">
+              <label for="sel-shift">Shift</label>
+              <select id="sel-shift"></select>
+            </div>
+          </div>
+
+          <button id="btn-open" class="btn primary block">Buka Checksheet</button>
+        </div>
+        <div id="home-groups"></div>
+      </section>
+
+      <!-- ---- CHECKLIST ---- -->
+      <section id="view-check" class="view">
+        <div id="check-head" class="card compact"></div>
+        <div id="check-list"></div>
+        <div class="card">
+          <label for="in-checknote">Catatan umum (opsional)</label>
+          <textarea id="in-checknote" rows="2"></textarea>
+        </div>
+        <div class="sticky-actions">
+          <div id="check-tally" class="tally"></div>
+          <button id="btn-submit" class="btn primary">Simpan</button>
+        </div>
+      </section>
+
+      <!-- ---- TEMUAN ---- -->
+      <section id="view-findings" class="view">
+        <div class="card compact">
+          <div class="chips">
+            <button class="chip active" data-fstatus="">Semua aktif</button>
+            <button class="chip" data-fstatus="OPEN">Open</button>
+            <button class="chip" data-fstatus="IN_PROGRESS">Proses</button>
+            <button class="chip" data-fstatus="CLOSED">Selesai</button>
+          </div>
+        </div>
+        <div id="finding-list"></div>
+      </section>
+
+      <!-- ---- DASHBOARD ---- -->
+      <section id="view-dashboard" class="view">
+        <div id="dash-cards" class="cards"></div>
+        <div class="card">
+          <h3>Tren mingguan</h3>
+          <div id="dash-trend" class="trend"></div>
+        </div>
+        <div class="card">
+          <h3>Part paling sering NG</h3>
+          <div id="dash-ng"></div>
+        </div>
+      </section>
+
+      <!-- ---- GANTI PASSWORD ---- -->
+      <section id="view-pin" class="view">
+        <div class="card">
+          <label for="in-oldpin">Password lama</label>
+          <input id="in-oldpin" type="password" autocomplete="current-password">
+          <label for="in-newpin">Password baru (minimal 6 karakter)</label>
+          <input id="in-newpin" type="password" autocomplete="new-password">
+          <button id="btn-pin" class="btn primary block">Simpan Password</button>
+        </div>
+      </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="busy" class="busy hidden"><div class="spinner"></div></div>
+</div>
+
+<?!= include('ui/App'); ?>
+</body>
+</html>

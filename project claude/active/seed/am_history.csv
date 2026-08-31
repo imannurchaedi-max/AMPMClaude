@@ -1,0 +1,215 @@
+﻿line,week,frequency,seq,part_name,standard,pic,result
+AHP,42,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+AHP,42,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,NG
+AHP,42,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+AHP,42,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+AHP,42,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,42,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,42,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+AHP,42,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek dan greasing gear",OP 2,OK
+AHP,42,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,NG
+AHP,42,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+AHP,42,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,NG
+AHP,42,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+AHP,42,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+AHP,42,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,42,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,42,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+AHP,42,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+AHP,42,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+AHP,42,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+AHP,42,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+AHP,42,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,42,MONTHLY,22,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+AHP,42,MONTHLY,23,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+AHP,42,MONTHLY,24,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+AHP,42,MONTHLY,25,Ducting,Bebas dari debu,"OP 1,2,3",OK
+AHP,42,MONTHLY,26,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+AHP,44,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+AHP,44,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+AHP,44,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+AHP,44,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+AHP,44,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,44,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,44,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+AHP,44,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+AHP,44,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+AHP,44,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+AHP,44,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+AHP,44,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+AHP,44,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+AHP,44,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,44,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,44,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+AHP,44,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+AHP,44,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+AHP,44,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+AHP,44,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+AHP,44,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,44,WEEKLY,22,All Belt Roller,Bebas dari kerak,"OP 1,2,3",OK
+AHP,44,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+AHP,44,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+AHP,44,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+AHP,44,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",OK
+AHP,44,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+AHP,45,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+AHP,45,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+AHP,45,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+AHP,45,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+AHP,45,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,NG
+AHP,45,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,NG
+AHP,45,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,NG
+AHP,45,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+AHP,45,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+AHP,45,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+AHP,45,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+AHP,45,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+AHP,45,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+AHP,45,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,45,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,45,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+AHP,45,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+AHP,45,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+AHP,45,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+AHP,45,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+AHP,45,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,45,WEEKLY,22,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,45,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+AHP,45,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+AHP,45,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+AHP,45,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",OK
+AHP,45,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+AHP,46,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+AHP,46,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+AHP,46,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+AHP,46,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+AHP,46,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,46,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+AHP,46,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+AHP,46,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+AHP,46,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+AHP,46,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+AHP,46,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+AHP,46,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+AHP,46,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+AHP,46,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,46,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+AHP,46,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+AHP,46,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+AHP,46,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+AHP,46,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+AHP,46,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+AHP,46,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,46,WEEKLY,22,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+AHP,46,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,
+AHP,46,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",
+AHP,46,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",
+AHP,46,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",
+AHP,46,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,
+BHP,42,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+BHP,42,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,NG
+BHP,42,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+BHP,42,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+BHP,42,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,42,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,42,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+BHP,42,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek dan greasing gear",OP 2,OK
+BHP,42,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,NG
+BHP,42,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+BHP,42,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,NG
+BHP,42,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+BHP,42,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+BHP,42,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,42,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,42,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+BHP,42,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+BHP,42,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+BHP,42,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+BHP,42,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+BHP,42,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,42,MONTHLY,22,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+BHP,42,MONTHLY,23,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+BHP,42,MONTHLY,24,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+BHP,42,MONTHLY,25,Ducting,Bebas dari debu,"OP 1,2,3",OK
+BHP,42,MONTHLY,26,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+BHP,44,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+BHP,44,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+BHP,44,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+BHP,44,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+BHP,44,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,44,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,44,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+BHP,44,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+BHP,44,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+BHP,44,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+BHP,44,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+BHP,44,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+BHP,44,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+BHP,44,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,44,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,44,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+BHP,44,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+BHP,44,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+BHP,44,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+BHP,44,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+BHP,44,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,44,WEEKLY,22,All Belt Roller,Bebas dari kerak,"OP 1,2,3",OK
+BHP,44,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+BHP,44,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+BHP,44,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+BHP,44,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",OK
+BHP,44,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+BHP,45,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+BHP,45,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+BHP,45,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+BHP,45,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+BHP,45,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,NG
+BHP,45,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,NG
+BHP,45,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,NG
+BHP,45,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+BHP,45,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+BHP,45,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+BHP,45,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+BHP,45,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+BHP,45,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+BHP,45,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,45,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,45,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+BHP,45,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+BHP,45,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+BHP,45,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+BHP,45,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+BHP,45,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,45,WEEKLY,22,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,45,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,OK
+BHP,45,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",OK
+BHP,45,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",OK
+BHP,45,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",OK
+BHP,45,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,OK
+BHP,46,WEEKLY,1,Ruangan luar dan dalam Hammer mill,Bebas dari debu pulp dan SAP,Packer,OK
+BHP,46,WEEKLY,2,Belt Feeding SAP 1 & 2,Bebas dari kerak fluff dan SAP,OP 1,OK
+BHP,46,WEEKLY,3,Chamber Drum Forming,Bebas dari kerak fluff,OP 1,OK
+BHP,46,WEEKLY,4,Drum Forming,Bebas dari kerak fluff,"OP 1, OP 2, OP3",OK
+BHP,46,WEEKLY,5,Gear Core pad cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,46,WEEKLY,6,Gear ADL cutter,Terdapat pelumas (Greasing Gear),OP 1,OK
+BHP,46,WEEKLY,7,Gear core cutter,Terdapat pelumas (Greasing Gear),OP 2,OK
+BHP,46,WEEKLY,8,Pad Turning Unit (Rotator),"Bebas dari debu NWO dan akumulasi glue,Flexible hose tidak sobek",OP 2,OK
+BHP,46,WEEKLY,9,Picture Sheet Filter Vacumm,Bebas dari debu NWO dan tidak ada kebocoran pada flexible hose,OP 3,OK
+BHP,46,WEEKLY,10,Roller bifolding vertikal dan horizontal,"Kencangkan baut, dan marking baut sejajar",OP,OK
+BHP,46,WEEKLY,11,Coupling Servo Motor,"Kencangkan baut, dan marking baut sejajar",OP 3,OK
+BHP,46,WEEKLY,12,Stacker,"Bebas dari debu NWO,flat belt before stacker tidak sobek/geser dan finger stacker tidak miring",OP 3 / Packer,OK
+BHP,46,WEEKLY,13,All Conveyor Belt,"Bebas dari debu NWO,akumulasi glue dan pastikan kondisi baut kencang dan vacum tidak mampet (Cek standar vaccum presure switch)","OP 1,2,3",OK
+BHP,46,WEEKLY,14,Lantai Mesin Bagian Depan,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,46,WEEKLY,15,Lantai Mesin Bagian Belakang,Bebas dari debu fluff dan NWO,Packer,OK
+BHP,46,WEEKLY,16,All Unwinder Material,"Bebas dari debu fluff dan NWO,Tidak ada shaft/AS yang bocor","OP 1,2,3/Packer",OK
+BHP,46,WEEKLY,17,Safety Door Acrylic,"Bebas dari debu fluff dan NWO,Acrylic tidak pecah","OP 1,2,3/Packer",OK
+BHP,46,WEEKLY,18,Selang angin,Tidak ada Kebocoran angin,"OP 1,2,3",OK
+BHP,46,WEEKLY,19,Timing belt,Pastikan kondisi Timing belt tidak sobek dan tidak kendur,"OP 1,2,3",OK
+BHP,46,WEEKLY,20,Flexible hose/Selang vaccum,Tidak ada Kebocoran vaccum,"OP 1,2,3",OK
+BHP,46,WEEKLY,21,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,46,WEEKLY,22,All roller,Tidak ada roller macet,"OP 1,2,3",OK
+BHP,46,MONTHLY,23,Conveyor Line Packaging,Bebas dari debu dan pastikan conveyor berfungsi dengan baik,Packer,
+BHP,46,MONTHLY,24,Debu Di atas Mesin,Bebas dari debu,"OP 1,2,3",
+BHP,46,MONTHLY,25,Debu Di Kolong Mesin,Bebas dari debu fluff dan SAP,"OP 1,2,3",
+BHP,46,MONTHLY,26,Ducting,Bebas dari debu,"OP 1,2,3",
+BHP,46,MONTHLY,27,"Stacker (Push Piece,Push bag dan finger Stacker)",Kondisi baut kencang dan marking baut sejajar,Operator 3,

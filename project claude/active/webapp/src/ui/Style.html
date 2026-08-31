@@ -1,0 +1,620 @@
+<style>
+/* Mobile-first. Operator memakai ini sambil berdiri di lantai produksi:
+   target sentuh besar, kontras tinggi, tanpa gestur halus.
+
+   Token warna & font diselaraskan dengan DAM PORTAL (active trial/index.html,
+   0. DT SUMMARY) supaya terasa satu keluarga dengan aplikasi DAM lain -
+   accent biru, font Outfit, gaya login dengan logo, gradient dan shadow
+   senada. SENGAJA TIDAK ikut glassmorphism/blur ala DAM PORTAL: kartu tetap
+   solid putih (bukan translusen) karena kontras tinggi lebih penting di
+   layar HP di bawah cahaya lantai produksi daripada efek kaca dashboard
+   desktop. Gradient dipakai solid/opak (bukan warna transparan di atas
+   warna lain) supaya kontras teks tidak ikut turun. */
+
+:root {
+  --bg: #f0f4f8;
+  --surface: #ffffff;
+  --ink: #1e293b;
+  --muted: #475569;
+  --line: rgba(0, 0, 0, .12);
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #60a5fa;
+  --ok: #0f7b3f;
+  --ng: #dc2626;
+  --na: #94a3b8;
+  --warn: #b45309;
+  --radius: 14px;
+  --tap: 48px;
+  --shadow: 0 3px 10px rgba(30, 41, 59, .10);
+  --shadow-lg: 0 16px 36px rgba(30, 41, 59, .18);
+
+  /* Sidebar DAM PORTAL (Gemba Control Tower) - dipakai untuk drawer menu. */
+  --sidebar-w: 264px;
+  --sidebar-bg: #1e2a3a;
+  --sidebar-text: #8fa4b8;
+  --sidebar-text-hover: #e8edf2;
+  --sidebar-active-bg: rgba(59, 130, 246, .18);
+  --sidebar-divider: rgba(255, 255, 255, .08);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  font: 15px/1.45 'Outfit', -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(59, 130, 246, .08) 0, transparent 55%),
+    radial-gradient(at 100% 0%, rgba(220, 38, 38, .05) 0, transparent 50%);
+  background-attachment: fixed;
+  color: var(--ink);
+}
+
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.err { color: var(--ng); min-height: 1.2em; margin: 8px 0 0; font-size: 13px; }
+
+/* ---------- Login ---------- */
+/* Gradient hero solid (bukan translusen) - sama seperti .login-background
+   di DAM PORTAL, jadi kesan pertama app ini langsung terasa satu keluarga. */
+#view-login {
+  min-height: 100vh;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 55%, var(--primary-light) 100%);
+}
+#view-login.active { display: grid; }
+#view-login::before {
+  content: '';
+  position: absolute;
+  width: 420px; height: 420px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .06);
+  top: -140px; right: -140px;
+  pointer-events: none;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 28px 22px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  z-index: 1;
+}
+.login-brand { text-align: center; margin-bottom: 6px; }
+.login-logo {
+  width: 84px;
+  height: auto;
+  background: #fff;
+  padding: 8px 14px;
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(30, 41, 59, .16);
+  margin-bottom: 14px;
+}
+.login-company {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: .02em;
+}
+.brand {
+  margin: 6px 0 0;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink);                       /* fallback bila background-clip tak didukung */
+  background: linear-gradient(120deg, var(--primary-dark), var(--primary) 60%, var(--primary-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.login-card .muted { margin: 4px 0 20px; font-size: 13px; text-align: center; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+
+/* ---------- Form ---------- */
+label {
+  display: block;
+  margin: 14px 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+input, select, textarea {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 10px 12px;
+  font-size: 16px;           /* 16px mencegah iOS auto-zoom saat fokus */
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+}
+textarea { min-height: 60px; resize: vertical; }
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -1px;
+  border-color: var(--primary);
+}
+
+.btn {
+  min-height: var(--tap);
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: #e8eaed;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn.primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, .3);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn.primary:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(37, 99, 235, .28); }
+.btn.block { width: 100%; margin-top: 20px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+.row { display: flex; gap: 12px; }
+.col { flex: 1; min-width: 0; }
+
+/* ---------- Shell ---------- */
+/* Topbar putih + border tipis - persis .app-topbar DAM PORTAL (background:
+   #ffffff). Sebelumnya dibuat biru solid dan itu yang bikin bentrok warna
+   dengan sidebar navy; DAM PORTAL sendiri menyimpan biru cuma untuk label
+   kecil ("DAM PORTAL") di atas judul, bukan latar penuh. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  padding: 0 8px;
+  background: var(--surface);
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-title { flex: 1; min-width: 0; line-height: 1.2; }
+.topbar-app-label {
+  display: block;
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.topbar-title strong { display: block; font-size: 16px; color: var(--ink); }
+.topbar-title small { display: block; color: var(--muted); font-size: 12px; }
+.icon-btn {
+  width: var(--tap);
+  height: var(--tap);
+  flex-shrink: 0;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.icon-btn:hover { background: rgba(59, 130, 246, .1); color: var(--primary); }
+
+/* Penanda "tersambung" ala live indicator DAM PORTAL - hanya dekoratif,
+   bukan klaim streaming realtime, cukup menandai app aktif membaca database. */
+.live-pill {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 rgba(74, 222, 128, .6);
+  animation: livepulse 2.2s infinite;
+}
+@keyframes livepulse {
+  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, .55); }
+  70% { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+/* Sidebar kiri - struktur & warna disamakan persis dengan sidebar DAM
+   PORTAL/Gemba Control Tower (bukan overlay kanan tanpa identitas seperti
+   sebelumnya). Off-canvas (translateX) dipertahankan sederhana karena
+   dipakai di HP - tidak ada varian dock permanen desktop, checksheet ini
+   tidak butuh itu. */
+.app-wrapper { position: relative; }
+.app-main { min-height: 100vh; }
+
+.app-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 1050;
+  width: var(--sidebar-w);
+  max-width: 82vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  box-shadow: 8px 0 28px rgba(0, 0, 0, .32);
+  transform: translateX(-100%);
+  transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+  overflow-y: auto;
+}
+.app-sidebar.open { transform: translateX(0); }
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 14px;
+  border-bottom: 1px solid var(--sidebar-divider);
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #fff;
+  padding: 4px;
+  object-fit: contain;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .25);
+  flex-shrink: 0;
+}
+.sidebar-title-group { min-width: 0; }
+.sidebar-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.sidebar-subtitle {
+  font-size: 11px;
+  color: var(--sidebar-text);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.sidebar-user-profile { padding: 16px; text-align: center; flex-shrink: 0; }
+.sidebar-avatar { font-size: 2.6rem; line-height: 1; color: rgba(255, 255, 255, .5); margin-bottom: 6px; }
+.sidebar-user-name { font-weight: 700; color: #fff; font-size: 15px; }
+.sidebar-divider { border: 0; border-top: 1px solid var(--sidebar-divider); margin: 10px 0; }
+.sidebar-user-details { display: flex; flex-direction: column; gap: 6px; font-size: 12px; text-align: left; }
+.sidebar-user-details div { display: flex; align-items: center; gap: 8px; }
+.sidebar-user-details i { width: 14px; text-align: center; color: var(--primary-light); flex-shrink: 0; }
+.sidebar-user-details span { min-width: 0; overflow-wrap: anywhere; }
+
+.main-nav { display: flex; flex-direction: column; gap: 2px; padding: 6px 0; flex: 1; }
+
+.sidebar-footer { padding: 10px 12px 16px; border-top: 1px solid var(--sidebar-divider); flex-shrink: 0; }
+.sidebar-footer .drawer-item { width: 100%; margin: 0; justify-content: center; border: 1px solid rgba(255, 255, 255, .15); }
+
+.drawer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 24px);
+  margin: 3px 12px;
+  min-height: var(--tap);
+  padding: 0 14px;
+  font-size: 15px;
+  font-family: inherit;
+  text-align: left;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease;
+}
+.drawer-item i { font-size: 16px; width: 18px; text-align: center; flex-shrink: 0; }
+.drawer-item:hover, .drawer-item:focus-visible {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-text-hover);
+}
+.drawer-item.active {
+  background: var(--sidebar-active-bg);
+  color: var(--sidebar-text-hover);
+  font-weight: 600;
+}
+.drawer-item.danger { color: #f87171; }
+.drawer-item.danger:hover { background: rgba(248, 113, 113, .14); color: #fecaca; }
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  background: rgba(0, 0, 0, .45);
+}
+
+main { padding: 12px 12px 96px; max-width: 720px; margin: 0 auto; }
+.view { display: none; }
+.view.active { display: block; }
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.card.compact { padding: 12px 16px; }
+.card h3 { margin: 0 0 12px; font-size: 15px; }
+
+/* ---------- Checklist ---------- */
+.task {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: box-shadow .15s ease;
+}
+.task.is-ok { border-left-color: var(--ok); box-shadow: 0 3px 12px rgba(15, 123, 63, .14); }
+.task.is-ng { border-left-color: var(--ng); box-shadow: 0 3px 12px rgba(220, 38, 38, .14); }
+.task.is-na { border-left-color: var(--na); }
+
+.task-head { display: flex; gap: 10px; align-items: baseline; }
+.task-seq {
+  flex: none;
+  min-width: 26px;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.task-part { font-weight: 600; }
+.task-meta { margin: 8px 0 0 36px; font-size: 13px; color: var(--muted); }
+.task-meta b { color: var(--ink); font-weight: 600; }
+
+.choices { display: flex; gap: 8px; margin: 12px 0 0 36px; }
+.choice {
+  flex: 1;
+  min-height: var(--tap);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.choice[data-v="OK"].sel { background: var(--ok); border-color: var(--ok); color: #fff; box-shadow: 0 4px 12px rgba(15, 123, 63, .35); transform: translateY(-1px); }
+.choice[data-v="NG"].sel { background: var(--ng); border-color: var(--ng); color: #fff; box-shadow: 0 4px 12px rgba(220, 38, 38, .35); transform: translateY(-1px); }
+.choice[data-v="NA"].sel { background: var(--na); border-color: var(--na); color: #fff; box-shadow: 0 4px 12px rgba(148, 163, 184, .35); transform: translateY(-1px); }
+
+.task-note { margin: 10px 0 0 36px; }
+.task-note.hidden { display: none; }
+
+.task-photo {
+  margin: 10px 0 0 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.task-photo.hidden { display: none; }
+.btn-photo {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+.btn-photo:disabled { opacity: .5; cursor: not-allowed; }
+.photo-status { font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
+.photo-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  display: block;
+}
+.err-inline { color: var(--ng); }
+
+.group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 4px 10px;
+}
+.group-head h3 { margin: 0; font-size: 15px; }
+
+.recap-divider {
+  margin: 20px 4px 10px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  background: #e8eaed;
+  color: var(--muted);
+}
+.badge.ok { background: #e3f4ea; color: var(--ok); }
+.badge.warn { background: #fdf0dc; color: var(--warn); }
+.badge.ng { background: #fce8e6; color: var(--ng); }
+
+.sticky-actions {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 15;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.tally { flex: 1; font-size: 13px; color: var(--muted); }
+.tally b { color: var(--ink); }
+
+/* ---------- Dashboard ---------- */
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+.stat {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--primary);
+}
+.stat:has(.v.ok) { border-top-color: var(--ok); }
+.stat:has(.v.ng) { border-top-color: var(--ng); }
+.stat:has(.v.warn) { border-top-color: var(--warn); }
+.stat .k { font-size: 11px; text-transform: uppercase; letter-spacing: .3px; color: var(--muted); }
+.stat .v { font-size: 26px; font-weight: 700; line-height: 1.2; margin-top: 4px; }
+.stat .v.ok { color: var(--ok); }
+.stat .v.ng { color: var(--ng); }
+.stat .v.warn { color: var(--warn); }
+
+.trend { display: flex; align-items: flex-end; gap: 6px; height: 130px; }
+.bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; }
+.bar i {
+  display: block;
+  border-radius: 4px 4px 0 0;
+  background: var(--primary);
+  min-height: 2px;
+}
+.bar span { display: block; margin-top: 6px; font-size: 10px; text-align: center; color: var(--muted); }
+
+table.list { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.list th, table.list td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); }
+table.list th { font-size: 11px; text-transform: uppercase; color: var(--muted); }
+table.list td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: .02em;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--muted);
+  cursor: pointer;
+  transition: box-shadow .12s ease;
+}
+.chip.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  border-color: var(--primary-dark);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, .3);
+}
+
+.finding {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--warn);
+  box-shadow: var(--shadow);
+}
+.finding.overdue { border-left-color: var(--ng); }
+.finding.done { border-left-color: var(--ok); opacity: .7; }
+.finding h4 { margin: 0 0 4px; font-size: 14px; }
+.finding p { margin: 4px 0; font-size: 13px; color: var(--muted); }
+.finding .acts { display: flex; gap: 8px; margin-top: 10px; }
+.finding .acts .btn { min-height: 38px; font-size: 13px; }
+
+.empty { padding: 32px 16px; text-align: center; color: var(--muted); }
+
+/* ---------- Overlay ---------- */
+.toast {
+  position: fixed;
+  left: 50%; bottom: 84px;
+  z-index: 60;
+  max-width: 90vw;
+  padding: 12px 18px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: #202124;
+  color: #fff;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .3);
+}
+.toast.err { background: var(--ng); }
+.toast.ok { background: var(--ok); }
+
+.busy {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .6);
+}
+.spinner {
+  width: 38px; height: 38px;
+  border: 3px solid var(--line);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (min-width: 640px) {
+  .cards { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---------- Desktop: sidebar terbuka permanen ---------- */
+/* Sesuai perilaku DAM PORTAL - sidebar cuma jadi overlay yang perlu ditoggle
+   di layar sempit (HP). Di layar lebar (tablet ke atas), sidebar mendorong
+   konten alih-alih menimpanya, dan tombol menu/overlay tidak relevan lagi. */
+@media (min-width: 900px) {
+  .app-wrapper { display: flex; }
+  .app-sidebar {
+    position: sticky;
+    top: 0;
+    left: auto;
+    height: 100vh;
+    flex-shrink: 0;
+    transform: none;
+    box-shadow: none;
+    border-right: 1px solid var(--sidebar-divider);
+  }
+  .app-main { flex: 1; min-width: 0; }
+  #btn-menu, .sidebar-overlay { display: none !important; }
+  .sticky-actions { left: var(--sidebar-w); }
+  main { max-width: 760px; margin: 0 auto; }
+}
+</style>

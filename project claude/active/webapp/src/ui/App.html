@@ -1,0 +1,717 @@
+<script>
+/* global google */
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------- state
+  var S = {
+    token: null,
+    boot: null,          // hasil app.bootstrap
+    ctx: null,           // {machine_id, station, date, shift}
+    groups: [],          // grup frekuensi pada checksheet yang dibuka
+    active: null,        // grup yang sedang diisi
+    answers: {},         // task_id -> {result, note}
+    findingFilter: ''
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  // Penyimpanan token bisa gagal (mode privat, site data diblokir).
+  // Aplikasi harus tetap jalan, cukup dengan sesi yang hilang saat reload.
+  var store = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* abaikan */ } },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) { /* abaikan */ } }
+  };
+
+  // ------------------------------------------------------------------ rpc
+  var busy = 0;
+  function setBusy(on) {
+    busy += on ? 1 : -1;
+    if (busy < 0) busy = 0;
+    $('busy').classList.toggle('hidden', busy === 0);
+  }
+
+  function rpc(action, payload) {
+    setBusy(true);
+    return new Promise(function (resolve, reject) {
+      google.script.run
+        .withSuccessHandler(function (res) {
+          setBusy(false);
+          if (res && res.ok) return resolve(res.data);
+          if (res && res.code === 'SESSION_EXPIRED') {
+            logout(true);
+            return reject(new Error('Sesi berakhir, silakan masuk lagi.'));
+          }
+          reject(new Error((res && res.error) || 'Terjadi kesalahan.'));
+        })
+        .withFailureHandler(function (err) {
+          setBusy(false);
+          reject(new Error(err && err.message ? err.message : 'Gagal menghubungi server.'));
+        })
+        .rpc(action, S.token, payload || {});
+    });
+  }
+
+  var toastTimer;
+  function toast(msg, kind) {
+    var t = $('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + (kind || '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.add('hidden'); }, 3200);
+  }
+
+  // ---------------------------------------------------------------- views
+  var TITLES = {
+    home: ['Isi Checksheet', ''],
+    check: ['Checksheet', ''],
+    findings: ['Temuan', ''],
+    dashboard: ['Dashboard', ''],
+    pin: ['Ganti Password', '']
+  };
+
+  function show(view, sub) {
+    ['home', 'check', 'findings', 'dashboard', 'pin'].forEach(function (v) {
+      $('view-' + v).classList.toggle('active', v === view);
+    });
+    $('top-title').textContent = TITLES[view][0];
+    $('top-sub').textContent = sub || '';
+    $('btn-back').classList.toggle('hidden', view === 'home');
+    S.view = view;
+    updateDrawerActive(view);
+    closeDrawer();
+    window.scrollTo(0, 0);
+  }
+
+  /** Sorot menu di drawer sesuai view aktif - checklist detail ikut sorot "home". */
+  function updateDrawerActive(view) {
+    var navKey = (view === 'check') ? 'home' : view;
+    Array.prototype.forEach.call(document.querySelectorAll('.drawer-item[data-nav]'), function (b) {
+      b.classList.toggle('active', b.getAttribute('data-nav') === navKey);
+    });
+  }
+
+  function openDrawer() {
+    $('drawer').classList.add('open');
+    $('scrim').classList.remove('hidden');
+  }
+  function closeDrawer() {
+    $('drawer').classList.remove('open');
+    $('scrim').classList.add('hidden');
+  }
+
+  // ---------------------------------------------------------------- login
+  function doLogin() {
+    var nik = $('in-nik').value.trim();
+    var pass = $('in-pass').value;
+    $('login-err').textContent = '';
+    if (!nik || !pass) {
+      $('login-err').textContent = 'NIK dan password wajib diisi.';
+      return;
+    }
+    setBusy(true);
+    google.script.run
+      .withSuccessHandler(function (res) {
+        setBusy(false);
+        if (!res.ok) { $('login-err').textContent = res.error; return; }
+        S.token = res.data.token;
+        store.set('ampm_token', S.token);
+        $('in-pass').value = '';
+        bootstrap();
+      })
+      .withFailureHandler(function (e) {
+        setBusy(false);
+        $('login-err').textContent = e.message || 'Gagal menghubungi server.';
+      })
+      .rpc('auth.login', null, { nik: nik, password: pass });
+  }
+
+  function logout(silent) {
+    if (S.token && !silent) rpc('auth.logout').catch(function () {});
+    S.token = null;
+    S.boot = null;
+    store.del('ampm_token');
+    $('shell').classList.add('hidden');
+    $('view-login').classList.add('active');
+    $('in-nik').value = '';
+    $('in-pass').value = '';
+  }
+
+  function bootstrap() {
+    return rpc('app.bootstrap').then(function (b) {
+      S.boot = b;
+      $('view-login').classList.remove('active');
+      $('shell').classList.remove('hidden');
+
+      $('u-name').textContent = b.user.name || b.user.nik;
+      $('u-nik').textContent = b.user.nik;
+      $('u-role').textContent = b.user.jabatan || b.user.role;
+      $('u-dept').textContent = b.user.dept || '-';
+      $('u-stations').textContent = (b.user.stations && b.user.stations.length)
+        ? b.user.stations.join(', ') : 'Semua stasiun';
+
+      // Sembunyikan menu yang tidak berhak diakses peran ini
+      Array.prototype.forEach.call(document.querySelectorAll('[data-need]'), function (n) {
+        n.classList.toggle('hidden', !b.can[n.getAttribute('data-need')]);
+      });
+
+      // Login pertama masih memakai password bersama dari direktori karyawan.
+      // Paksa menetapkan password pribadi lebih dulu, karena tanpa itu jejak
+      // siapa mengisi checksheet tidak bisa dipercaya.
+      if (b.user.must_change_password) {
+        show('pin');
+        toast('Buat password pribadi Anda dulu sebelum mengisi checksheet.', 'err');
+        return;
+      }
+
+      fill($('sel-machine'), b.machines, 'machine_id', function (m) {
+        return m.machine_id + ' - ' + m.name;
+      });
+      fill($('sel-station'), b.stations, 'station_id', function (s) { return s.label; });
+      fill($('sel-shift'), b.shifts.map(function (x) { return { v: x }; }), 'v',
+           function (s) { return 'Shift ' + s.v; });
+      $('in-date').value = b.app.today;
+
+      show('home');
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function fill(sel, items, valueKey, labelFn) {
+    sel.innerHTML = '';
+    items.forEach(function (it) {
+      var o = document.createElement('option');
+      o.value = it[valueKey];
+      o.textContent = labelFn(it);
+      sel.appendChild(o);
+    });
+  }
+
+  // ------------------------------------------------------------ checklist
+  function openChecklist() {
+    S.ctx = {
+      machine_id: $('sel-machine').value,
+      station: $('sel-station').value,
+      date: $('in-date').value,
+      shift: $('sel-shift').value
+    };
+    if (!S.ctx.machine_id || !S.ctx.station) {
+      toast('Pilih mesin dan stasiun dulu.', 'err');
+      return;
+    }
+    rpc('am.checklist', S.ctx).then(function (data) {
+      S.groups = data.groups;
+      renderGroupPicker(data);
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function renderGroupPicker(data) {
+    var box = $('home-groups');
+    box.innerHTML = '';
+
+    if (!data.groups.length) {
+      box.appendChild(emptyBox('Tidak ada task jatuh tempo untuk pilihan ini.'));
+      return;
+    }
+
+    data.groups.forEach(function (g) {
+      var card = el('div', 'card compact');
+      var head = el('div', 'group-head');
+      var left = el('div');
+      left.appendChild(el('h3', null, g.frequency_label));
+      left.appendChild(el('small', 'muted', g.period_label + ' - ' + g.tasks.length + ' item'));
+      head.appendChild(left);
+
+      var st = g.status === 'VERIFIED' ? 'ok' : (g.status === 'SUBMITTED' ? 'warn' : '');
+      var label = g.status === 'VERIFIED' ? 'Terverifikasi'
+                : (g.status === 'SUBMITTED' ? 'Terkirim' : 'Belum diisi');
+      head.appendChild(el('span', 'badge ' + st, label));
+      card.appendChild(head);
+
+      var btn = el('button', 'btn block', g.status === 'DRAFT' ? 'Isi sekarang' : 'Lihat / ubah');
+      btn.onclick = function () { startGroup(g); };
+      card.appendChild(btn);
+      box.appendChild(card);
+    });
+  }
+
+  function emptyBox(msg) {
+    var d = el('div', 'card');
+    d.appendChild(el('p', 'empty', msg));
+    return d;
+  }
+
+  /** Pemisah sebelum task SHIFTLY yang ikut tampil di grup WEEKLY sebagai rekap. */
+  function recapDivider() {
+    var d = el('div', 'recap-divider');
+    d.appendChild(el('span', null, 'Rekap Shiftly - double-check mingguan'));
+    return d;
+  }
+
+  function startGroup(g) {
+    S.active = g;
+    S.answers = {};
+    g.tasks.forEach(function (t) {
+      S.answers[t.task_id] = {
+        result: t.result || '', note: t.note || '', photo_url: t.photo_url || ''
+      };
+    });
+
+    var locked = g.status === 'VERIFIED';
+    S.locked = locked;
+    var head = $('check-head');
+    head.innerHTML = '';
+    head.appendChild(el('strong', null,
+      S.ctx.machine_id + ' - ' + S.ctx.station + ' - ' + g.frequency_label));
+    head.appendChild(el('div', 'muted', g.period_label));
+    if (locked) {
+      head.appendChild(el('span', 'badge ok', 'Sudah diverifikasi - hanya baca'));
+    }
+
+    var list = $('check-list');
+    list.innerHTML = '';
+    var recapShown = false;
+    g.tasks.forEach(function (t) {
+      // Rekap SHIFTLY di dalam grup WEEKLY selalu di bawah task asli
+      // (lihat sort di amGetChecklist) - cukup deteksi transisi pertama.
+      if (t.recap && !recapShown) {
+        list.appendChild(recapDivider());
+        recapShown = true;
+      }
+      list.appendChild(renderTask(t, locked));
+    });
+
+    $('in-checknote').value = '';
+    $('in-checknote').disabled = locked;
+    $('btn-submit').disabled = locked;
+    updateTally();
+    show('check', S.ctx.machine_id + ' - ' + S.ctx.station);
+  }
+
+  function renderTask(t, locked) {
+    var box = el('div', 'task');
+    box.id = 'task-' + t.task_id;
+
+    var head = el('div', 'task-head');
+    head.appendChild(el('span', 'task-seq', t.seq + '.'));
+    head.appendChild(el('span', 'task-part', t.part_name || '(tanpa nama part)'));
+    box.appendChild(head);
+
+    if (t.action) {
+      var a = el('div', 'task-meta');
+      a.appendChild(el('b', null, 'Tindakan: '));
+      a.appendChild(document.createTextNode(t.action));
+      box.appendChild(a);
+    }
+    if (t.standard) {
+      var s = el('div', 'task-meta');
+      s.appendChild(el('b', null, 'Standar: '));
+      s.appendChild(document.createTextNode(t.standard));
+      box.appendChild(s);
+    }
+
+    var choices = el('div', 'choices');
+    ['OK', 'NG', 'NA'].forEach(function (v) {
+      var b = el('button', 'choice', v);
+      b.setAttribute('data-v', v);
+      b.disabled = locked;
+      b.onclick = function () { setAnswer(t.task_id, v); };
+      choices.appendChild(b);
+    });
+    box.appendChild(choices);
+
+    var note = el('div', 'task-note hidden');
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Catatan temuan (wajib untuk NG)';
+    inp.value = t.note || '';
+    inp.disabled = locked;
+    inp.oninput = function () { S.answers[t.task_id].note = inp.value; };
+    note.appendChild(inp);
+    box.appendChild(note);
+
+    var photoRow = el('div', 'task-photo hidden');
+    var btnPhoto = el('button', 'btn-photo', 'Foto bukti');
+    btnPhoto.type = 'button';
+    btnPhoto.disabled = locked;
+    btnPhoto.onclick = function () { triggerPhoto(t.task_id); };
+    photoRow.appendChild(btnPhoto);
+
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+    fileInput.setAttribute('capture', 'environment');
+    fileInput.className = 'hidden';
+    fileInput.id = 'photo-input-' + t.task_id;
+    fileInput.onchange = function () { handlePhotoFile(t.task_id, this); };
+    photoRow.appendChild(fileInput);
+
+    var status = el('span', 'photo-status');
+    status.id = 'photo-status-' + t.task_id;
+    photoRow.appendChild(status);
+    box.appendChild(photoRow);
+
+    paintTask(box, t.task_id);
+    renderPhotoStatus(t.task_id, t.photo_url || '');
+    return box;
+  }
+
+  // -------------------------------------------------------------- foto
+  function triggerPhoto(taskId) {
+    var input = $('photo-input-' + taskId);
+    if (input) input.click();
+  }
+
+  function handlePhotoFile(taskId, input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    if (file.type.indexOf('image/') !== 0) {
+      toast('Hanya berkas gambar yang diterima.', 'err');
+      input.value = '';
+      return;
+    }
+    setPhotoBusy(taskId, 'Memproses foto...');
+    compressImage(file, function (base64, mime) {
+      if (!base64) {
+        setPhotoError(taskId, 'Gagal memproses gambar.');
+        return;
+      }
+      setPhotoBusy(taskId, 'Mengunggah...');
+      rpc('photo.upload', {
+        base64: base64, filename: file.name, mime_type: mime, task_id: taskId
+      }).then(function (r) {
+        S.answers[taskId].photo_url = r.url;
+        renderPhotoStatus(taskId, r.url, r.name, r.size);
+      }).catch(function (e) {
+        S.answers[taskId].photo_url = '';
+        setPhotoError(taskId, e.message || 'Gagal mengunggah.');
+      });
+    });
+    input.value = '';
+  }
+
+  /**
+   * Kompresi di kanvas sebelum kirim - foto asli dari HP (2-5 MB) melebihi
+   * batas payload google.script.run. Batas 1 MB yang berlaku tetap di server
+   * (10_Photo.gs); ini cuma usaha terbaik supaya jarang ditolak lagi di sana.
+   */
+  function compressImage(file, cb) {
+    var reader = new FileReader();
+    reader.onload = function (ev) {
+      var img = new Image();
+      img.onload = function () {
+        var maxDim = 1280;
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) {
+          var scale = Math.min(maxDim / w, maxDim / h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        var mime = 'image/jpeg';
+        var quality = 0.85;
+        var dataUrl = canvas.toDataURL(mime, quality);
+        while (dataUrl.length > 1.3 * 1024 * 1024 && quality > 0.2) {
+          quality -= 0.15;
+          dataUrl = canvas.toDataURL(mime, quality);
+        }
+        cb(dataUrl.split(',')[1], mime);
+      };
+      img.onerror = function () { cb(null, null); };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function () { cb(null, null); };
+    reader.readAsDataURL(file);
+  }
+
+  function setPhotoBusy(taskId, text) {
+    var box = $('photo-status-' + taskId);
+    if (box) box.innerHTML = '<small class="muted">' + text + '</small>';
+  }
+
+  function setPhotoError(taskId, text) {
+    var box = $('photo-status-' + taskId);
+    if (box) box.innerHTML = '<small class="err-inline">' + text + '</small>';
+  }
+
+  function renderPhotoStatus(taskId, url, name, size) {
+    var box = $('photo-status-' + taskId);
+    if (!box) return;
+    if (!url) { box.innerHTML = '<small class="muted">Belum ada foto</small>'; return; }
+    box.innerHTML = '<a href="' + url + '" target="_blank"><img class="photo-thumb" src="' +
+      url + '"></a>' + (size ? '<small class="muted">' + formatSize(size) + '</small>' : '');
+  }
+
+  function formatSize(n) {
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n / 1024).toFixed(0) + ' KB';
+    return (n / 1048576).toFixed(2) + ' MB';
+  }
+
+  function setAnswer(taskId, value) {
+    var a = S.answers[taskId];
+    a.result = a.result === value ? '' : value;   // tekan lagi untuk batal
+    paintTask($('task-' + taskId), taskId);
+    updateTally();
+  }
+
+  function paintTask(box, taskId) {
+    if (!box) return;
+    var v = S.answers[taskId].result;
+    box.className = 'task' + (v ? ' is-' + v.toLowerCase() : '');
+    Array.prototype.forEach.call(box.querySelectorAll('.choice'), function (b) {
+      b.classList.toggle('sel', b.getAttribute('data-v') === v);
+    });
+    box.querySelector('.task-note').classList.toggle('hidden', v !== 'NG');
+    var photoRow = box.querySelector('.task-photo');
+    if (photoRow) photoRow.classList.toggle('hidden', v !== 'OK' && v !== 'NG');
+  }
+
+  function updateTally() {
+    var c = { OK: 0, NG: 0, NA: 0, blank: 0 };
+    Object.keys(S.answers).forEach(function (k) {
+      var r = S.answers[k].result;
+      if (r) c[r]++; else c.blank++;
+    });
+    $('check-tally').innerHTML =
+      '<b>' + c.OK + '</b> OK &nbsp; <b>' + c.NG + '</b> NG &nbsp; ' +
+      '<b>' + c.NA + '</b> NA &nbsp; <b>' + c.blank + '</b> kosong';
+    // Checksheet yang sudah diverifikasi tetap terkunci meski semua terisi
+    $('btn-submit').disabled = S.locked || c.blank > 0;
+  }
+
+  function submitCheck() {
+    var results = Object.keys(S.answers).map(function (k) {
+      return {
+        task_id: k, result: S.answers[k].result, note: S.answers[k].note,
+        photo_url: S.answers[k].photo_url || ''
+      };
+    });
+
+    var blank = results.filter(function (r) { return !r.result; });
+    if (blank.length) { toast('Masih ada ' + blank.length + ' item kosong.', 'err'); return; }
+
+    var ngNoNote = results.filter(function (r) {
+      return r.result === 'NG' && !String(r.note || '').trim();
+    });
+    if (ngNoNote.length) {
+      toast('Isi catatan untuk ' + ngNoNote.length + ' item NG.', 'err');
+      return;
+    }
+
+    var noPhoto = results.filter(function (r) {
+      return (r.result === 'OK' || r.result === 'NG') && !r.photo_url;
+    });
+    if (noPhoto.length) {
+      toast('Ambil foto bukti untuk ' + noPhoto.length + ' item OK/NG.', 'err');
+      return;
+    }
+
+    rpc('am.submit', {
+      machine_id: S.ctx.machine_id,
+      station: S.ctx.station,
+      date: S.ctx.date,
+      shift: S.ctx.shift,
+      frequency: S.active.frequency,
+      results: results,
+      note: $('in-checknote').value
+    }).then(function (res) {
+      var msg = 'Tersimpan. ' + res.counts.OK + ' OK, ' + res.counts.NG + ' NG.';
+      if (res.findings_created) msg += ' ' + res.findings_created + ' temuan dibuat.';
+      toast(msg, 'ok');
+      show('home');
+      openChecklist();
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  // -------------------------------------------------------------- temuan
+  function loadFindings() {
+    var f = S.findingFilter ? { status: S.findingFilter } : { open_only: true };
+    rpc('finding.list', f).then(function (data) {
+      var box = $('finding-list');
+      box.innerHTML = '';
+      if (!data.findings.length) {
+        box.appendChild(emptyBox('Tidak ada temuan.'));
+        return;
+      }
+      data.findings.forEach(function (x) { box.appendChild(renderFinding(x)); });
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function renderFinding(f) {
+    var done = ['CLOSED', 'DONE', 'CANCELLED'].indexOf(f.status) >= 0;
+    var box = el('div', 'finding' + (f.overdue ? ' overdue' : '') + (done ? ' done' : ''));
+
+    box.appendChild(el('h4', null, f.part_name || f.task_id));
+    box.appendChild(el('p', null, f.description));
+
+    var meta = el('p', 'muted');
+    meta.textContent = f.machine_id + ' - ' + f.station + ' - ' + f.status +
+      ' - ' + f.age_days + ' hari' + (f.overdue ? ' (LEWAT TENGGAT)' : '') +
+      (f.assigned_to ? ' - PIC ' + f.assigned_to : '');
+    box.appendChild(meta);
+
+    if (!done) {
+      var acts = el('div', 'acts');
+      var bAssign = el('button', 'btn', 'Tugaskan');
+      bAssign.onclick = function () { assignFinding(f); };
+      var bClose = el('button', 'btn primary', 'Tutup');
+      bClose.onclick = function () { closeFinding(f); };
+      acts.appendChild(bAssign);
+      acts.appendChild(bClose);
+      box.appendChild(acts);
+    }
+    return box;
+  }
+
+  function assignFinding(f) {
+    var nik = prompt('NIK penanggung jawab:', f.assigned_to || '');
+    if (nik === null) return;
+    var due = prompt('Tenggat (yyyy-mm-dd):', f.due_date || '');
+    if (due === null) return;
+    rpc('finding.assign', {
+      finding_id: f.finding_id, assigned_to: nik.trim(), due_date: due.trim()
+    }).then(function () { toast('Temuan ditugaskan.', 'ok'); loadFindings(); })
+      .catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function closeFinding(f) {
+    var note = prompt('Catatan penutupan (wajib):', '');
+    if (note === null) return;
+    if (!note.trim()) { toast('Catatan penutupan wajib diisi.', 'err'); return; }
+    rpc('finding.close', { finding_id: f.finding_id, closing_note: note.trim() })
+      .then(function () { toast('Temuan ditutup.', 'ok'); loadFindings(); })
+      .catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  // ----------------------------------------------------------- dashboard
+  function loadDashboard() {
+    rpc('dashboard.summary', { weeks: 8 }).then(function (d) {
+      var cur = d.current;
+      var cards = $('dash-cards');
+      cards.innerHTML = '';
+
+      stat(cards, 'Compliance hari ini',
+           cur.compliance == null ? '-' : Math.round(cur.compliance * 100) + '%',
+           cur.compliance != null && cur.compliance >= 0.95 ? 'ok' : 'warn');
+      stat(cards, 'Checksheet masuk', cur.submitted + ' / ' + cur.expected, '');
+      stat(cards, 'Temuan terbuka', d.findings.open + d.findings.in_progress,
+           (d.findings.open + d.findings.in_progress) ? 'warn' : 'ok');
+      stat(cards, 'Lewat tenggat', d.findings.overdue, d.findings.overdue ? 'ng' : 'ok');
+
+      renderTrend(d.weeks);
+      renderNg(d.top_ng);
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function stat(parent, key, value, kind) {
+    var d = el('div', 'stat');
+    d.appendChild(el('div', 'k', key));
+    d.appendChild(el('div', 'v ' + (kind || ''), String(value)));
+    parent.appendChild(d);
+  }
+
+  function renderTrend(weeks) {
+    var box = $('dash-trend');
+    box.innerHTML = '';
+    var max = Math.max.apply(null, weeks.map(function (w) { return w.task; }).concat([1]));
+    weeks.forEach(function (w) {
+      var b = el('div', 'bar');
+      var i = el('i');
+      i.style.height = Math.round((w.task / max) * 100) + '%';
+      if (w.cleanliness != null && w.cleanliness < 0.9) i.style.background = 'var(--warn)';
+      b.appendChild(i);
+      b.appendChild(el('span', null, w.week.replace(/^\d+-/, '')));
+      b.title = w.week + ': ' + w.task + ' item, ' + w.ng + ' NG';
+      box.appendChild(b);
+    });
+  }
+
+  function renderNg(rows) {
+    var box = $('dash-ng');
+    box.innerHTML = '';
+    if (!rows.length) { box.appendChild(el('p', 'empty', 'Belum ada data NG.')); return; }
+
+    var t = el('table', 'list');
+    var thead = el('thead');
+    var hr = el('tr');
+    ['Part', 'Lini', 'Stasiun', 'NG'].forEach(function (h) { hr.appendChild(el('th', null, h)); });
+    thead.appendChild(hr);
+    t.appendChild(thead);
+
+    var tb = el('tbody');
+    rows.forEach(function (r) {
+      var tr = el('tr');
+      tr.appendChild(el('td', null, r.part_name));
+      tr.appendChild(el('td', null, r.line));
+      tr.appendChild(el('td', null, r.station));
+      tr.appendChild(el('td', 'num', String(r.count)));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    box.appendChild(t);
+  }
+
+  // --------------------------------------------------------------- bind
+  function bind() {
+    $('btn-login').onclick = doLogin;
+    $('in-pass').onkeydown = function (e) { if (e.key === 'Enter') doLogin(); };
+    $('btn-open').onclick = openChecklist;
+    $('btn-submit').onclick = submitCheck;
+    $('btn-menu').onclick = openDrawer;
+    $('scrim').onclick = closeDrawer;
+    $('btn-back').onclick = function () { show('home'); };
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-nav]'), function (b) {
+      b.onclick = function () {
+        var nav = b.getAttribute('data-nav');
+        if (nav === 'logout') return logout();
+        if (nav === 'findings') { show('findings'); loadFindings(); return; }
+        if (nav === 'dashboard') { show('dashboard'); loadDashboard(); return; }
+        show(nav);
+      };
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-fstatus]'), function (c) {
+      c.onclick = function () {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-fstatus]'), function (x) {
+          x.classList.remove('active');
+        });
+        c.classList.add('active');
+        S.findingFilter = c.getAttribute('data-fstatus');
+        loadFindings();
+      };
+    });
+
+    $('btn-pin').onclick = function () {
+      rpc('auth.changePassword', {
+        old_password: $('in-oldpin').value,
+        new_password: $('in-newpin').value
+      }).then(function () {
+        toast('Password diperbarui.', 'ok');
+        $('in-oldpin').value = '';
+        $('in-newpin').value = '';
+        bootstrap();
+      }).catch(function (e) { toast(e.message, 'err'); });
+    };
+  }
+
+  // --------------------------------------------------------------- init
+  bind();
+  var saved = store.get('ampm_token');
+  if (saved) {
+    S.token = saved;
+    bootstrap().catch(function () { logout(true); });
+  } else {
+    $('view-login').classList.add('active');
+  }
+})();
+</script>
