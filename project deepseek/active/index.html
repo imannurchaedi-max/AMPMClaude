@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AM PM Monitoring</title>
+  <style>
+    :root { --bg:#0f172a; --panel:#1e293b; --accent:#38bdf8; --text:#e2e8f0; --muted:#94a3b8; --border:#334155; --ok:#4ade80; --ng:#f87171; --na:#facc15; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+    header { padding:12px 20px; background:var(--panel); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:14px; }
+    h1 { font-size:17px; flex:1; }
+    .muted { color:var(--muted); }
+    nav { display:flex; gap:6px; padding:8px 20px; background:var(--panel); border-bottom:1px solid var(--border); }
+    nav button { background:transparent; color:var(--muted); border:1px solid var(--border); padding:7px 14px; border-radius:6px; cursor:pointer; }
+    nav button.active { background:var(--accent); color:#0f172a; border-color:var(--accent); }
+    main { padding:20px; max-width:1000px; margin:0 auto; }
+    .card { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:14px; }
+    h2 { font-size:15px; margin-bottom:10px; }
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+    input, select, textarea { width:100%; padding:8px; background:#0f172a; color:var(--text); border:1px solid var(--border); border-radius:6px; margin-bottom:10px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+    .btn { background:var(--accent); color:#0f172a; border:none; padding:9px 16px; border-radius:6px; cursor:pointer; font-weight:600; }
+    .btn.ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
+    .status { padding:8px 12px; border-radius:6px; font-size:13px; margin:10px 0; }
+    .status.ok { background:#16a34a22; color:var(--ok); }
+    .status.err { background:#dc262622; color:var(--ng); }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--border); }
+    th { color:var(--muted); }
+    .badge { padding:2px 8px; border-radius:10px; font-size:11px; }
+    .badge.ok { background:#16a34a33; color:var(--ok); }
+    .badge.ng { background:#dc262633; color:var(--ng); }
+    .badge.na { background:#eab30833; color:var(--na); }
+    .badge.open { background:#f9731633; color:#fb923c; }
+    .badge.closed { background:#16a34a33; color:var(--ok); }
+    .task { display:flex; gap:10px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); }
+    .task .info { flex:1; }
+    .task .acts { display:flex; gap:6px; }
+    .task .acts button { padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:transparent; color:var(--text); cursor:pointer; }
+    .task .acts button.sel-ok { background:var(--ok); color:#0f172a; border-color:var(--ok); }
+    .task .acts button.sel-ng { background:var(--ng); color:#0f172a; border-color:var(--ng); }
+    .task .acts button.sel-na { background:var(--na); color:#0f172a; border-color:var(--na); }
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+    .stat { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; text-align:center; }
+    .stat .num { font-size:26px; font-weight:700; }
+    .stat .lbl { font-size:12px; color:var(--muted); }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+  <div id="login" class="card" style="max-width:360px; margin:60px auto;">
+    <h2>Login</h2>
+    <label>NIK</label>
+    <input id="nik" type="text" placeholder="NIK">
+    <label>Password</label>
+    <input id="pw" type="password" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" style="width:100%" onclick="doLogin()">Login</button>
+    <div id="login-status" class="status hidden"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <header>
+      <h1>AM PM Monitoring</h1>
+      <div id="user-info" class="muted"></div>
+      <button class="btn ghost" onclick="logout()">Logout</button>
+    </header>
+    <nav>
+      <button id="tab-check" class="active" onclick="setView('check')">Check</button>
+      <button id="tab-finding" onclick="setView('finding')">Finding</button>
+      <button id="tab-dashboard" onclick="setView('dashboard')">Dashboard</button>
+    </nav>
+    <main>
+      <div id="view-check">
+        <div class="card">
+          <h2>Check Setup</h2>
+          <div class="grid">
+            <div><label>Line</label><select id="c-line" onchange="onLineChange()"><option value="AHP">AHP</option><option value="BHP">BHP</option></select></div>
+            <div><label>Machine</label><select id="c-machine"></select></div>
+            <div><label>Station</label><select id="c-station"></select></div>
+            <div><label>Frequency</label><select id="c-frequency"><option>SHIFTLY</option><option>WEEKLY</option><option>MONTHLY</option></select></div>
+            <div><label>Shift</label><select id="c-shift"><option>1</option><option>2</option><option>3</option></select></div>
+            <div><label>Date</label><input id="c-date" type="date"></div>
+          </div>
+          <button class="btn" onclick="loadTasks()">Load Tasks</button>
+        </div>
+        <div class="card">
+          <h2>Tasks</h2>
+          <div id="task-list" class="muted">Select setup and click Load Tasks.</div>
+          <button id="btn-submit" class="btn hidden" onclick="submitCheck()">Submit Check</button>
+          <div id="check-status" class="status hidden"></div>
+        </div>
+      </div>
+
+      <div id="view-finding" class="hidden">
+        <div class="card">
+          <h2>New Finding</h2>
+          <div class="grid">
+            <div><label>Part Name</label><input id="f-part" type="text"></div>
+            <div><label>Severity</label><select id="f-severity"><option>LOW</option><option>MEDIUM</option><option>HIGH</option></select></div>
+          </div>
+          <label>Description</label><textarea id="f-desc" rows="2"></textarea>
+          <div class="grid">
+            <div><label>Reason</label><input id="f-reason" type="text"></div>
+            <div><label>Assigned To</label><input id="f-assign" type="text"></div>
+            <div><label>Due Date</label><input id="f-due" type="date"></div>
+          </div>
+          <button class="btn" onclick="saveFinding()">Save Finding</button>
+          <div id="finding-status" class="status hidden"></div>
+        </div>
+        <div class="card">
+          <h2>Findings</h2>
+          <select id="f-filter" onchange="refreshFindings()" style="width:200px">
+            <option value="OPEN">OPEN</option>
+            <option value="ALL">ALL</option>
+            <option value="CLOSED">CLOSED</option>
+          </select>
+          <div id="finding-list" class="muted" style="margin-top:8px">Loading...</div>
+        </div>
+      </div>
+
+      <div id="view-dashboard" class="hidden">
+        <div class="stats" id="dash-stats"></div>
+        <div class="card">
+          <h2>Recent Checks</h2>
+          <div id="recent-checks" class="muted">Loading...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:10; padding:20px;">
+    <div class="card" style="max-width:600px; margin:40px auto; max-height:80vh; overflow:auto;">
+      <h2 id="modal-title">Detail</h2>
+      <div id="modal-body"></div>
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+  var USER = null;
+  var MACHINES = [];
+  var STATIONS = [];
+  var TASKS = [];
+  var RESULTS = {};
+
+  function doLogin() {
+    var nik = document.getElementById('nik').value.trim();
+    var pw = document.getElementById('pw').value;
+    var st = document.getElementById('login-status');
+    st.className = 'status hidden';
+    if (!nik || !pw) { st.textContent = 'NIK and password required.'; st.className = 'status err'; return; }
+    google.script.run
+      .withSuccessHandler(function (r) {
+        if (r.ok) { USER = r.user; enterApp(); }
+        else { st.textContent = 'Login failed: ' + (r.error || 'unknown'); st.className = 'status err'; }
+      })
+      .withFailureHandler(function (e) { st.textContent = 'Error: ' + e.message; st.className = 'status err'; })
+      .authenticate(nik, pw);
+  }
+
+  function enterApp() {
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('user-info').textContent = USER.name + ' | ' + USER.jenis + ' | ' + (USER.activity || '');
+    document.getElementById('c-date').value = new Date().toISOString().slice(0, 10);
+    loadMachines();
+    loadStations();
+    setView('dashboard');
+    refreshDashboard();
+  }
+
+  function logout() {
+    USER = null;
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('login').classList.remove('hidden');
+  }
+
+  function setView(v) {
+    ['check', 'finding', 'dashboard'].forEach(function (x) {
+      document.getElementById('view-' + x).classList.toggle('hidden', x !== v);
+      document.getElementById('tab-' + x).classList.toggle('active', x === v);
+    });
+    if (v === 'finding') refreshFindings();
+    if (v === 'dashboard') refreshDashboard();
+  }
+
+  function loadMachines() {
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) return;
+      MACHINES = r.data;
+      renderMachines();
+    }).getList('machine');
+  }
+
+  function renderMachines() {
+    var line = document.getElementById('c-line').value;
+    var sel = document.getElementById('c-machine');
+    sel.innerHTML = '';
+    MACHINES.forEach(function (m) {
+      if (m.line === line) {
+        var o = document.createElement('option');
+        o.value = m.machine_id;
+        o.textContent = m.machine_id + ' - ' + m.name;
+        sel.appendChild(o);
+      }
+    });
+  }
+
+  function onLineChange() { renderMachines(); }
+
+  function loadStations() {
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) return;
+      STATIONS = r.data;
+      var sel = document.getElementById('c-station');
+      sel.innerHTML = '';
+      r.data.forEach(function (s) {
+        var o = document.createElement('option');
+        o.value = s.station_id;
+        o.textContent = s.station_id + ' - ' + s.label;
+        sel.appendChild(o);
+      });
+    }).getList('station');
+  }
+
+  function loadTasks() {
+    var line = document.getElementById('c-line').value;
+    var machine = document.getElementById('c-machine').value;
+    var station = document.getElementById('c-station').value;
+    var freq = document.getElementById('c-frequency').value;
+    document.getElementById('task-list').innerHTML = '<span class="muted">Loading...</span>';
+    google.script.run.withSuccessHandler(function (r) {
+      renderTasks(r.data || []);
+    }).getTasks(line, machine, station, freq);
+  }
+  function renderTasks(tasks) {
+    TASKS = tasks;
+    RESULTS = {};
+    var el = document.getElementById('task-list');
+    el.innerHTML = '';
+    if (!tasks.length) { el.innerHTML = '<span class="muted">No tasks for this selection.</span>'; document.getElementById('btn-submit').classList.add('hidden'); return; }
+    tasks.forEach(function (t, i) {
+      var d = document.createElement('div');
+      d.className = 'task';
+      d.innerHTML =
+        '<div class="info"><b>' + (i + 1) + '. ' + t.part_name + '</b>' +
+        '<div class="muted">' + (t.action || '') + '</div>' +
+        '<div class="muted">Std: ' + (t.standard || '') + ' | PIC: ' + (t.pic_label || '') + '</div></div>' +
+        '<div class="acts">' +
+        '<button onclick="setResult(\'' + t.task_id + '\',\'OK\',this)">OK</button>' +
+        '<button onclick="setResult(\'' + t.task_id + '\',\'NG\',this)">NG</button>' +
+        '<button onclick="setResult(\'' + t.task_id + '\',\'NA\',this)">NA</button>' +
+        '</div>';
+      el.appendChild(d);
+    });
+    document.getElementById('btn-submit').classList.remove('hidden');
+  }
+
+  function setResult(taskId, result, btn) {
+    RESULTS[taskId] = result;
+    var parent = btn.parentElement;
+    parent.querySelectorAll('button').forEach(function (b) { b.classList.remove('sel-ok', 'sel-ng', 'sel-na'); });
+    btn.classList.add('sel-' + result.toLowerCase());
+  }
+
+  function submitCheck() {
+    var results = [];
+    TASKS.forEach(function (t) {
+      if (RESULTS[t.task_id]) results.push({ task_id: t.task_id, seq: t.seq, result: RESULTS[t.task_id], note: '' });
+    });
+    if (!results.length) { alert('Mark at least one task.'); return; }
+    var payload = {
+      check_date: document.getElementById('c-date').value,
+      period_key: document.getElementById('c-date').value,
+      shift: document.getElementById('c-shift').value,
+      line: document.getElementById('c-line').value,
+      machine_id: document.getElementById('c-machine').value,
+      station: document.getElementById('c-station').value,
+      frequency: document.getElementById('c-frequency').value,
+      nik: USER.nik,
+      results: results
+    };
+    var st = document.getElementById('check-status');
+    st.className = 'status hidden';
+    google.script.run.withSuccessHandler(function (r) {
+      st.className = 'status ' + (r.ok ? 'ok' : 'err');
+      st.textContent = r.ok ? ('Submitted. total=' + r.total + ' OK=' + r.ok + ' NG=' + r.ng + ' NA=' + r.na) : ('Error: ' + (r.error || ''));
+      if (r.ok) {
+        RESULTS = {};
+        TASKS = [];
+        document.getElementById('task-list').innerHTML = '<span class="muted">Done.</span>';
+        document.getElementById('btn-submit').classList.add('hidden');
+      }
+    }).submitCheck(payload);
+  }
+
+  function saveFinding() {
+    var payload = {
+      part_name: document.getElementById('f-part').value,
+      description: document.getElementById('f-desc').value,
+      severity: document.getElementById('f-severity').value,
+      reason: document.getElementById('f-reason').value,
+      assigned_to: document.getElementById('f-assign').value,
+      due_date: document.getElementById('f-due').value,
+      raised_by: USER.nik
+    };
+    if (!payload.description) { alert('Description required.'); return; }
+    var st = document.getElementById('finding-status');
+    st.className = 'status hidden';
+    google.script.run.withSuccessHandler(function (r) {
+      st.className = 'status ' + (r.ok ? 'ok' : 'err');
+      st.textContent = r.ok ? 'Finding saved.' : ('Error: ' + (r.error || ''));
+      if (r.ok) {
+        ['f-part', 'f-desc', 'f-reason', 'f-assign', 'f-due'].forEach(function (id) { document.getElementById(id).value = ''; });
+        refreshFindings();
+      }
+    }).saveFinding(payload);
+  }
+
+  function refreshFindings() {
+    var filter = document.getElementById('f-filter').value;
+    var status = (filter === 'ALL') ? null : filter;
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) return;
+      var el = document.getElementById('finding-list');
+      var rows = r.data || [];
+      if (!rows.length) { el.innerHTML = '<span class="muted">No findings.</span>'; return; }
+      var html = '<table><tr><th>Part</th><th>Desc</th><th>Severity</th><th>Status</th><th>Assigned</th><th>Due</th><th></th></tr>';
+      rows.forEach(function (f) {
+        var st = String(f.status || '').toLowerCase();
+        var act = (st === 'open') ? '<button class="btn ghost" onclick="closeFinding(\'' + f.finding_id + '\')">Close</button>' : '';
+        html += '<tr><td>' + (f.part_name || '') + '</td><td>' + (f.description || '') + '</td><td>' + (f.severity || '') + '</td><td><span class="badge ' + st + '">' + (f.status || '') + '</span></td><td>' + (f.assigned_to || '') + '</td><td>' + (f.due_date || '') + '</td><td>' + act + '</td></tr>';
+      });
+      html += '</table>';
+      el.innerHTML = html;
+    }).getFindings(status);
+  }
+
+  function refreshDashboard() {
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) return;
+      var d = r.data;
+      document.getElementById('dash-stats').innerHTML =
+        stat(d.total_checks, 'Total Checks') +
+        stat(d.total_ok, 'OK', 'ok') +
+        stat(d.total_ng, 'NG', 'ng') +
+        stat(d.total_na, 'NA', 'na') +
+        stat(d.open_findings, 'Open Findings') +
+        stat(d.total_findings, 'Total Findings');
+    }).getDashboard();
+    refreshRecentChecks();
+  }
+
+  function stat(num, lbl, cls) {
+    return '<div class="stat"><div class="num ' + (cls || '') + '">' + num + '</div><div class="lbl">' + lbl + '</div></div>';
+  }
+
+  function refreshRecentChecks() {
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) return;
+      var el = document.getElementById('recent-checks');
+      var rows = r.data || [];
+      if (!rows.length) { el.innerHTML = '<span class="muted">No checks yet.</span>'; return; }
+      var html = '<table><tr><th>Date</th><th>Machine</th><th>Station</th><th>Freq</th><th>OK</th><th>NG</th><th>NA</th><th>Status</th><th></th></tr>';
+      rows.forEach(function (c) {
+        var st = String(c.status || '').toLowerCase();
+        var act = '<button class="btn ghost" onclick="viewCheckDetail(\'' + c.check_id + '\')">View</button>';
+        if (st === 'submitted') act += ' <button class="btn ghost" onclick="verifyCheck(\'' + c.check_id + '\')">Verify</button>';
+        html += '<tr><td>' + (c.check_date || '') + '</td><td>' + (c.machine_id || '') + '</td><td>' + (c.station || '') + '</td><td>' + (c.frequency || '') + '</td><td>' + (c.ok_count || 0) + '</td><td>' + (c.ng_count || 0) + '</td><td>' + (c.na_count || 0) + '</td><td><span class="badge ' + st + '">' + (c.status || '') + '</span></td><td>' + act + '</td></tr>';
+      });
+      html += '</table>';
+      el.innerHTML = html;
+    }).getRecentChecks(20);
+  }
+
+  function verifyCheck(checkId) {
+    google.script.run.withSuccessHandler(function (r) {
+      if (r.ok) refreshDashboard(); else alert('Verify failed: ' + (r.error || ''));
+    }).verifyCheck(checkId, USER.nik);
+  }
+
+  function viewCheckDetail(checkId) {
+    google.script.run.withSuccessHandler(function (r) {
+      if (!r.ok) { alert(r.error || 'Error'); return; }
+      var h = r.data.check;
+      var html = '<div class="muted">' + (h.check_date || '') + ' | ' + (h.machine_id || '') + ' | ' + (h.station || '') + ' | ' + (h.frequency || '') + ' | Shift ' + (h.shift || '') + '</div>';
+      html += '<table style="margin-top:8px"><tr><th>#</th><th>Part</th><th>Result</th></tr>';
+      r.data.results.forEach(function (x) {
+        var res = String(x.result || '').toUpperCase();
+        html += '<tr><td>' + (x.seq || '') + '</td><td>' + (x.part_name || '') + '</td><td><span class="badge ' + res.toLowerCase() + '">' + res + '</span></td></tr>';
+      });
+      html += '</table>';
+      showModal('Check Detail', html);
+    }).getCheckDetail(checkId);
+  }
+
+  function closeFinding(findingId) {
+    var note = prompt('Closing note (optional):');
+    if (note === null) return;
+    google.script.run.withSuccessHandler(function (r) {
+      if (r.ok) refreshFindings(); else alert('Close failed: ' + (r.error || ''));
+    }).closeFinding(findingId, USER.nik, note);
+  }
+
+  function showModal(title, html) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+  </script>
+</body>
+</html>
